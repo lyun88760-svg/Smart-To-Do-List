@@ -6,8 +6,8 @@ const router = Router();
 
 router.get('/', (req, res) => {
   try {
-    const { status, tag, search, sort, order } = req.query;
-    const tasks = TaskModel.getAll({ status, tag, search, sort, order });
+    const { status, tag, priority, search, sort, order } = req.query;
+    const tasks = TaskModel.getAll({ status, tag, priority, search, sort, order });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
