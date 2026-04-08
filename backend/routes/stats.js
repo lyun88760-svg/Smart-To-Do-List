@@ -3,7 +3,7 @@ import { getDb } from '../db/init.js';
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/stats', (req, res) => {
   try {
     const db = getDb();
 

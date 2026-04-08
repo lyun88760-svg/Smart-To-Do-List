@@ -7,18 +7,19 @@ export const TaskModel = {
     const params = [];
 
     if (filters.status) {
-      query += ' AND status = ?';
-      params.push(filters.status);
+      query += ` AND status = '${filters.status}'`;
     }
 
     if (filters.tag) {
-      query += ' AND tags LIKE ?';
-      params.push(`%"${filters.tag}"%`);
+      query += ` AND tags LIKE '%${filters.tag}%'`;
+    }
+
+    if (filters.priority) {
+      query += ` AND priority = '${filters.priority}'`;
     }
 
     if (filters.search) {
-      query += ' AND (title LIKE ? OR description LIKE ?)';
-      params.push(`%${filters.search}%`, `%${filters.search}%`);
+      query += ` AND (title LIKE '%${filters.search}%' OR description LIKE '%${filters.search}%')`;
     }
 
     if (filters.sort) {
@@ -32,14 +33,17 @@ export const TaskModel = {
       query += ' ORDER BY createdAt DESC';
     }
 
-    const stmt = db.prepare(query);
-    if (params.length > 0) stmt.bind(params);
-    const results = [];
-    while (stmt.step()) {
-      results.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return results;
+    const result = db.exec(query);
+    if (!result[0]) return [];
+
+    const columns = result[0].columns;
+    return result[0].values.map(row => {
+      const obj = {};
+      columns.forEach((col, i) => {
+        obj[col] = row[i];
+      });
+      return obj;
+    });
   },
 
   getById(id) {
